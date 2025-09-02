@@ -520,9 +520,9 @@
     <script>
         // Configuração da planilha
         const SHEET_CONFIG = {
-            // Substitua pela URL de compartilhamento da sua planilha
-            url: "https://docs.google.com/spreadsheets/d/1dD1NGcWlTa7XGwtRFjSpHXksir6Wc9ZaGaKklPIMs24/export?format=csv&gid=0&range=B15:J27",
-            range: "B15:J27", // Intervalo específico
+            // Substitua pela URL pública da sua planilha (formato pubhtml)
+            url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3qOFJMJ_6xLpZxUOdOK_CKsMVBNv6QHioyGHx-O2sabG0Vxd3o7h7pPQB6BI4-P-T7udw_AYXKYHZ/pubhtml?gid=0&single=true",
+            range: "B15:J27", // Intervalo específico que será extraído
             sheet: "Agosto" // Nome da guia
         };
 
@@ -533,16 +533,54 @@
             try {
                 showLoading();
                 
-                const response = await fetch(SHEET_CONFIG.url);
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                // Usar um proxy CORS para contornar limitações de CORS
+                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                const targetUrl = SHEET_CONFIG.url;
+                
+                let response;
+                let htmlText;
+                
+                try {
+                    // Primeiro tenta sem proxy
+                    response = await fetch(targetUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                        }
+                    });
+                    htmlText = await response.text();
+                } catch (corsError) {
+                    console.log('Tentativa sem proxy falhou, tentando alternativas...');
+                    
+                    // Tenta com diferentes métodos
+                    try {
+                        // Converte pubhtml para export CSV
+                        const csvUrl = targetUrl.replace('/pubhtml', '/export').replace(/&single=true/, '') + '&format=csv';
+                        response = await fetch(csvUrl);
+                        const csvText = await response.text();
+                        const data = parseCSVData(csvText);
+                        
+                        globalData = data;
+                        renderDashboard(data);
+                        hideLoading();
+                        return;
+                        
+                    } catch (csvError) {
+                        // Se CSV também falhar, usa dados de exemplo
+                        console.log('Usando dados de exemplo devido a limitações de CORS');
+                        const data = generateSampleData();
+                        globalData = data;
+                        renderDashboard(data);
+                        hideLoading();
+                        showCorsWarning();
+                        return;
+                    }
                 }
                 
-                const csvText = await response.text();
-                const data = parseCSVData(csvText);
+                const data = parseHTMLData(htmlText);
                 
                 if (data.posts.length === 0) {
-                    throw new Error("Nenhum dado foi encontrado no intervalo especificado");
+                    throw new Error("Nenhum dado foi encontrado no intervalo especificado. Verifique se a planilha está publicada corretamente.");
                 }
                 
                 globalData = data;
@@ -551,12 +589,100 @@
                 
             } catch (error) {
                 console.error('Erro ao buscar dados:', error);
-                showError(error.message);
+                showError(`${error.message}\n\nDicas:\n1. Verifique se a planilha está publicada como "Público na web"\n2. Confirme se a URL está correta\n3. Verifique se o intervalo B15:J27 contém dados`);
                 hideLoading();
             }
         }
 
-        // Parse dos dados CSV
+        // Parse dos dados HTML da planilha publicada
+        function parseHTMLData(htmlText) {
+            const data = {
+                overview: {
+                    visualizacoes_total: 0,
+                    contas_alcancadas_total: 0,
+                    interacoes_totais: 0,
+                    novos_seguidores_total: 0
+                },
+                posts: [],
+                computed: {}
+            };
+
+            try {
+                // Criar um parser DOM
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
+                
+                // Encontrar a tabela principal
+                const tables = doc.querySelectorAll('table');
+                let targetTable = null;
+                
+                // Procurar pela tabela que contém os dados
+                for (let table of tables) {
+                    const rows = table.querySelectorAll('tr');
+                    if (rows.length > 10) { // Assumindo que nossa tabela tem mais de 10 linhas
+                        targetTable = table;
+                        break;
+                    }
+                }
+                
+                if (!targetTable) {
+                    throw new Error('Tabela não encontrada no HTML');
+                }
+                
+                const rows = targetTable.querySelectorAll('tr');
+                
+                // Encontrar a linha que corresponde ao B15 (linha 15) e processar até J27
+                let startRow = -1;
+                let dataRows = [];
+                
+                // Procurar por indicadores de dados (números, textos específicos)
+                for (let i = 0; i < rows.length; i++) {
+                    const cells = rows[i].querySelectorAll('td, th');
+                    if (cells.length >= 8) {
+                        const firstCell = cells[1]?.textContent?.trim(); // Coluna B
+                        const secondCell = cells[2]?.textContent?.trim(); // Coluna C
+                        
+                        if (firstCell && secondCell && firstCell.length > 0 && secondCell.length > 0) {
+                            if (startRow === -1) startRow = i;
+                            dataRows.push(rows[i]);
+                            
+                            // Limitar a 13 linhas (B15:J27 são 13 linhas)
+                            if (dataRows.length >= 13) break;
+                        }
+                    }
+                }
+                
+                // Processar as linhas de dados
+                dataRows.forEach((row, index) => {
+                    const cells = row.querySelectorAll('td, th');
+                    if (cells.length >= 9) {
+                        const post = {
+                            conteudo: cells[1]?.textContent?.trim() || '', // Coluna B
+                            nome: cells[2]?.textContent?.trim() || '', // Coluna C
+                            tempo: cells[3]?.textContent?.trim() || '', // Coluna D
+                            hora: cells[4]?.textContent?.trim() || '', // Coluna E
+                            visualizacoes: parseNumber(cells[5]?.textContent) || 0, // Coluna F
+                            contas_alcancadas: parseNumber(cells[6]?.textContent) || 0, // Coluna G
+                            interacoes: parseNumber(cells[7]?.textContent) || 0, // Coluna H
+                            seguir: parseNumber(cells[8]?.textContent) || 0 // Coluna I
+                        };
+                        
+                        // Só adicionar se tiver nome válido
+                        if (post.nome && post.nome.length > 0 && post.nome !== '' && !post.nome.includes('Nome')) {
+                            data.posts.push(post);
+                        }
+                    }
+                });
+                
+            } catch (parseError) {
+                console.error('Erro no parsing HTML:', parseError);
+                throw new Error('Erro ao processar dados da planilha');
+            }
+            
+            return calculateTotals(data);
+        }
+
+        // Parse dos dados CSV (fallback)
         function parseCSVData(csvText) {
             const lines = csvText.split('\n').map(line => line.trim()).filter(line => line);
             const data = {
