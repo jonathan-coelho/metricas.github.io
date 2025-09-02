@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Métricas de Marketing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Modern, sleek design with gradients, animations, and responsive layout. */
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #4a90e2;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        h1, h2 {
+            margin: 0.5rem 0;
+        }
+
+        .section {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            margin: 0;
+            color: #4a90e2;
+        }
+
+        .card p {
+            font-size: 2rem;
+            margin: 0.5rem 0 0;
+            color: #333;
+        }
+
+        #search {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #4a90e2;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background: #4a90e2;
+            color: white;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .section {
+            animation: fadeIn 1s ease;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-chart-line"></i> Dashboard de Métricas de Marketing</h1>
+        <p>Visualize e analise o desempenho das suas postagens de forma interativa e incrível!</p>
+    </header>
+    
+    <section id="overview" class="section">
+        <h2>Visão Geral</h2>
+        <div class="cards">
+            <!-- Cards will be populated by JS -->
+        </div>
+    </section>
+    
+    <section id="posts" class="section">
+        <h2>Postagens Detalhadas</h2>
+        <input type="text" id="search" placeholder="Pesquisar por nome do conteúdo...">
+        <table>
+            <thead>
+                <tr>
+                    <th>Conteúdo</th>
+                    <th>Nome do Conteúdo</th>
+                    <th>Tempo dos Reels</th>
+                    <th>Hora da Postagem</th>
+                    <th>Visualizações</th>
+                    <th>Contas Alcançadas</th>
+                    <th>Interações</th>
+                    <th>Começaram a Seguir</th>
+                </tr>
+            </thead>
+            <tbody id="posts-table">
+                <!-- Rows populated by JS -->
+            </tbody>
+        </table>
+    </section>
+    
+    <section id="charts" class="section">
+        <h2>Visualizações Gráficas</h2>
+        <div class="chart-container">
+            <canvas id="viewsChart"></canvas>
+        </div>
+        <div class="chart-container">
+            <canvas id="interactionsChart"></canvas>
+        </div>
+    </section>
+    
+    <footer>
+        <p>Desenvolvido com <i class="fas fa-heart"></i> por Grok | Dados atualizados em tempo real do Google Sheets.</p>
+    </footer>
+    
+    <script>
+        // Fetches data directly from Google Sheets CSV export, parses it, populates UI, adds search filter, and renders charts.
+
+        const SHEET_URL = "https://docs.google.com/spreadsheets/d/[YOUR_SHEET_ID_HERE]/export?format=csv"; // Replace with your public Google Sheets CSV export link
+
+        async function fetchAndParseData() {
+            try {
+                const response = await fetch(SHEET_URL);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+                const csvText = await response.text();
+                
+                const lines= csvText.split('\n').map(line => line.trim()).filter(line => line);
+                const data = {
+                    overview: {},
+                    posts: [],
+                    computed: {}
+                };
+
+                let inOverview = false;
+                let inPosts = false;
+
+                for (let i = 0; i < lines.length; i++) {
+                    const row = lines[i].split(',').map(cell => cell.trim());
+
+                    if (row[0].includes('Visão Geral')) {
+                        inOverview = true;
+                        inPosts = false;
+                        continue;
+                    } else if (row[0].includes('Postagens')) {
+                        inOverview = false;
+                        inPosts = true;
+                        continue;
+                    }
+
+                    if (inOverview && row.length >= 6 && !isNaN(parseInt(row[0]))) {
+                        data.overview = {
+                            toques_bio: parseInt(row[0]) || 0,
+                            visualizacoes: parseInt(row[1].replace('.', '')) || 0,
+                            contas_alcancadas: parseInt(row[2].replace('.', '')) || 0,
+                            interacoes_totais: parseInt(row[3]) || 0,
+                            visitas_perfil: parseInt(row[4]) || 0,
+                            novos_seguidores: parseInt(row[5]) || 0
+                        };
+                    }
+
+                    if (inPosts && row.length >= 8 && row[0] !== 'Conteúdo') {
+                        const post = {
+                            conteudo: row[0],
+                            nome: row[1],
+                            tempo: row[2],
+                            hora: row[3],
+                            visualizacoes: parseInt(row[4]) || 0,
+                            contas_alcancadas: parseInt(row[5]) || 0,
+                            interacoes: parseInt(row[6]) || 0,
+                            seguir: parseInt(row[7]) || 0
+                        };
+                        data.posts.push(post);
+                    }
+                }
+
+                // Computed metrics for creativity
+                if (data.posts.length > 0) {
+                    const totalViews = data.posts.reduce((sum, p) => sum + p.visualizacoes, 0);
+                    const avgViews = totalViews / data.posts.length;
+                    const topPost = data.posts.reduce((max, p) => p.visualizacoes > max.visualizacoes ? p : max, data.posts[0]);
+                    data.computed = {
+                        total_views: totalViews,
+                        avg_views: Math.round(avgViews * 100) / 100,
+                        top_post: topPost.nome
+                    };
+                }
+
+                return data;
+            } catch (error) {
+                console.error('Error:', error);
+                return { overview: {}, posts: [], computed: {} };
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const data = await fetchAndParseData();
+            renderOverview(data.overview);
+            renderPosts(data.posts);
+            renderCharts(data.posts);
+            if (data.computed.top_post) {
+                alert(`Insight Rápido: A postagem top é "${data.computed.top_post}" com visualizações totais de ${data.computed.total_views}!`);
+            }
+        });
+
+        function renderOverview(overview) {
+            const cards = document.querySelector('.cards');
+            const metrics = [
+                { key: 'toques_bio', label: 'Toques no Link da Bio', icon: 'fas fa-link' },
+                { key: 'visualizacoes', label: 'Visualizações', icon: 'fas fa-eye' },
+                { key: 'contas_alcancadas', label: 'Contas Alcançadas', icon: 'fas fa-users' },
+                { key: 'interacoes_totais', label: 'Interações Totais', icon: 'fas fa-heart' },
+                { key: 'visitas_perfil', label: 'Visitas ao Perfil', icon: 'fas fa-user-check' },
+                { key: 'novos_seguidores', label: 'Novos Seguidores', icon: 'fas fa-user-plus' }
+            ];
+
+            metrics.forEach(metric => {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.innerHTML = `
+                    <i class="${metric.icon} fa-2x" style="color: #4a90e2;"></i>
+                    <h3>${metric.label}</h3>
+                    <p>${(overview[metric.key] || 0).toLocaleString('pt-BR')}</p>
+                `;
+                cards.appendChild(card);
+            });
+        }
+
+        function renderPosts(posts) {
+            const tableBody = document.getElementById('posts-table');
+            posts.forEach(post => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${post.conteudo}</td>
+                    <td>${post.nome}</td>
+                    <td>${post.tempo}</td>
+                    <td>${post.hora}</td>
+                    <td>${post.visualizacoes.toLocaleString('pt-BR')}</td>
+                    <td>${post.contas_alcancadas.toLocaleString('pt-BR')}</td>
+                    <td>${post.interacoes.toLocaleString('pt-BR')}</td>
+                    <td>${post.seguir.toLocaleString('pt-BR')}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Add search functionality
+            const searchInput = document.getElementById('search');
+            searchInput.addEventListener('input', () => {
+                const filter = searchInput.value.toLowerCase();
+                const rows = tableBody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+                    row.style.display = name.includes(filter) ? '' : 'none';
+                });
+            });
+        }
+
+        function renderCharts(posts) {
+            const labels = posts.map(post => post.nome.slice(0, 20) + '...'); // Shorten long names
+            const viewsData = posts.map(post => post.visualizacoes);
+            const interactionsData = posts.map(post => post.interacoes);
+
+            // Views Bar Chart
+            new Chart(document.getElementById('viewsChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Visualizações por Postagem',
+                        data: viewsData,
+                        backgroundColor: 'rgba(74, 144, 226, 0.7)',
+                        borderColor: 'rgba(74, 144, 226, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutBounce'
+                    }
+                }
+            });
+
+            // Interactions Line Chart
+            new Chart(document.getElementById('interactionsChart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Interações por Postagem',
+                        data: interactionsData,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutBounce'
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
