@@ -7,454 +7,159 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #2d3436;
+            min-height: 100vh; color: #2d3436;
         }
-
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Header Styles */
+        .main-container { max-width: 1400px; margin: 0 auto; padding: 20px; }
         .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 30px;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            border-radius: 20px; padding: 40px; margin-bottom: 30px; text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
         }
-
         .header h1 {
-            font-size: 2.8rem;
-            font-weight: 700;
+            font-size: 2.8rem; font-weight: 700;
             background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-            letter-spacing: -1px;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 10px; letter-spacing: -1px;
         }
-
-        .header p {
-            font-size: 1.1rem;
-            color: #636e72;
-            font-weight: 400;
-        }
-
+        .header p { font-size: 1.1rem; color: #636e72; font-weight: 400; }
         .header .date-info {
-            margin-top: 15px;
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-radius: 50px;
-            display: inline-block;
-            font-weight: 500;
-            font-size: 0.95rem;
+            margin-top: 15px; padding: 10px 20px; background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; border-radius: 50px; display: inline-block; font-weight: 500; font-size: 0.95rem;
         }
-
-        /* Loading State */
         .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 200px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 15px;
-            margin: 20px 0;
+            display: flex; justify-content: center; align-items: center;
+            height: 200px; background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px; margin: 20px 0;
         }
-
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
+            width: 40px; height: 40px; border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea; border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Section Styles */
+        @keyframes spin { 0%{transform:rotate(0)} 100%{transform:rotate(360deg)} }
         .section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);
+            border-radius: 20px; padding: 30px; margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08); border: 1px solid rgba(255, 255, 255, 0.2);
             animation: slideUp 0.6s ease;
         }
-
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: #2d3436;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .section-title i {
-            color: #667eea;
-        }
-
-        /* Cards Grid */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
+        .section-title { font-size: 1.8rem; font-weight: 600; color: #2d3436; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        .section-title i { color: #667eea; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px; }
         .metric-card {
             background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
+            border-radius: 15px; padding: 25px; text-align: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.5);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.3s ease; position: relative; overflow: hidden;
         }
-
         .metric-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2); transform: scaleX(0); transition: transform 0.3s ease;
         }
-
-        .metric-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .metric-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-        }
-
-        .metric-icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .metric-value {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #2d3436;
-            margin-bottom: 8px;
-        }
-
-        .metric-label {
-            font-size: 0.95rem;
-            color: #636e72;
-            font-weight: 500;
-        }
-
-        /* Search and Filters */
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-
-        .search-box {
-            flex: 1;
-            min-width: 250px;
-            position: relative;
-        }
-
+        .metric-card:hover::before { transform: scaleX(1); }
+        .metric-card:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+        .metric-icon { font-size: 2.5rem; margin-bottom: 15px; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .metric-value { font-size: 2.2rem; font-weight: 700; color: #2d3436; margin-bottom: 8px; }
+        .metric-label { font-size: 0.95rem; color: #636e72; font-weight: 500; }
+        .controls { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        .search-box { flex: 1; min-width: 250px; position: relative; }
         .search-box input {
-            width: 100%;
-            padding: 15px 20px 15px 50px;
-            border: 2px solid #e1e8ed;
-            border-radius: 50px;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.3s ease;
-            background: white;
+            width: 100%; padding: 15px 20px 15px 50px; border: 2px solid #e1e8ed;
+            border-radius: 50px; font-size: 1rem; outline: none; transition: all 0.3s ease; background: white;
         }
-
-        .search-box input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #636e72;
-        }
-
-        /* Table Styles */
-        .table-container {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e1e8ed;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
+        .search-box input:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        .search-box i { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: #636e72; }
+        .table-container { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05); border: 1px solid #e1e8ed; }
+        table { width: 100%; border-collapse: collapse; }
         th {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 20px 15px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            text-align: left;
-            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px 15px;
+            font-weight: 600; font-size: 0.95rem; text-align: left; letter-spacing: 0.5px;
         }
-
-        td {
-            padding: 18px 15px;
-            border-bottom: 1px solid #f1f3f4;
-            font-size: 0.95rem;
-            transition: background-color 0.2s ease;
-        }
-
-        tr:hover td {
-            background-color: #f8f9fa;
-        }
-
-        tr:nth-child(even) td {
-            background-color: #fafbfc;
-        }
-
-        .numeric {
-            text-align: right;
-            font-weight: 600;
-            color: #2d3436;
-        }
-
-        /* Chart Containers */
-        .chart-container {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e1e8ed;
-        }
-
-        .chart-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: #2d3436;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 25px;
-        }
-
-        /* Statistics Cards */
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .stat-item {
-            background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid #e1e8ed;
-        }
-
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: #636e72;
-            font-weight: 500;
-        }
-
-        /* Responsive */
+        td { padding: 18px 15px; border-bottom: 1px solid #f1f3f4; font-size: 0.95rem; transition: background-color 0.2s ease; }
+        tr:hover td { background-color: #f8f9fa; }
+        tr:nth-child(even) td { background-color: #fafbfc; }
+        .numeric { text-align: right; font-weight: 600; color: #2d3436; }
+        .chart-container { background: white; border-radius: 15px; padding: 30px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); border: 1px solid #e1e8ed; }
+        .chart-title { font-size: 1.4rem; font-weight: 600; color: #2d3436; margin-bottom: 20px; text-align: center; }
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 25px; }
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .stat-item { background: linear-gradient(135deg, #f8f9fa, #ffffff); padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #e1e8ed; }
+        .stat-value { font-size: 1.8rem; font-weight: 700; color: #667eea; margin-bottom: 5px; }
+        .stat-label { font-size: 0.85rem; color: #636e72; font-weight: 500; }
         @media (max-width: 768px) {
-            .main-container {
-                padding: 15px;
-            }
-
-            .header {
-                padding: 25px 20px;
-            }
-
-            .header h1 {
-                font-size: 2.2rem;
-            }
-
-            .metrics-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 15px;
-            }
-
-            .section {
-                padding: 20px;
-            }
-
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-
-            table {
-                font-size: 0.85rem;
-            }
-
-            th, td {
-                padding: 12px 10px;
-            }
+            .main-container { padding: 15px; }
+            .header { padding: 25px 20px; }
+            .header h1 { font-size: 2.2rem; }
+            .metrics-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+            .section { padding: 20px; }
+            .charts-grid { grid-template-columns: 1fr; }
+            table { font-size: 0.85rem; }
+            th, td { padding: 12px 10px; }
         }
-
-        /* Animations */
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.6s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 30px;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.95rem;
-        }
-
-        .footer i {
-            color: #ff6b6b;
-            animation: heartbeat 1.5s ease-in-out infinite;
-        }
-
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        /* Error State */
+        @keyframes slideUp { from {opacity:0; transform: translateY(20px);} to {opacity:1; transform: translateY(0);} }
+        .fade-in { animation: fadeIn 0.6s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .footer { text-align: center; padding: 30px; color: rgba(255,255,255,0.8); font-size: 0.95rem; }
+        .footer i { color: #ff6b6b; animation: heartbeat 1.5s ease-in-out infinite; }
+        @keyframes heartbeat { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
         .error-message {
-            background: #fff5f5;
-            color: #c53030;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #feb2b2;
-            text-align: center;
-            margin: 20px 0;
+            background: #fff5f5; color: #c53030; padding: 20px; border-radius: 12px;
+            border: 1px solid #feb2b2; text-align: center; margin: 20px 0;
         }
-
-        .error-message i {
-            font-size: 2rem;
-            margin-bottom: 10px;
+        .error-message i { font-size: 2rem; margin-bottom: 10px; }
+        .warning-banner {
+            margin-top: 15px; padding: 12px 16px; border-radius: 10px; color: #613400;
+            background: #fff4e6; border: 1px solid #ffd8a8; font-size: 0.95rem; display: none;
+        }
+        @media print {
+            body { background: white !important; }
+            .section { box-shadow: none !important; border: 1px solid #ddd; }
+            .header { background: white !important; color: black !important; }
+            .chart-container { page-break-inside: avoid; }
+            button { display: none !important; }
         }
     </style>
 </head>
 <body>
     <div class="main-container">
-        <!-- Header -->
         <div class="header">
             <h1><i class="fas fa-chart-line"></i> Dashboard de Métricas de Marketing</h1>
-            <p>Análise completa do desempenho das postagens e engagement</p>
+            <p>Análise completa do desempenho das postagens e do engajamento</p>
             <div class="date-info">
                 <i class="far fa-calendar-alt"></i> Dados de Agosto 2024
             </div>
+            <div id="warning" class="warning-banner"></div>
         </div>
 
-        <!-- Loading State -->
         <div id="loading" class="loading">
             <div class="spinner"></div>
             <span style="margin-left: 15px; color: #636e72;">Carregando dados...</span>
         </div>
 
-        <!-- Error State -->
         <div id="error" class="error-message" style="display: none;">
             <i class="fas fa-exclamation-triangle"></i>
             <h3>Erro ao carregar dados</h3>
             <p>Verifique se a planilha está configurada corretamente e tente novamente.</p>
         </div>
 
-        <!-- Overview Section -->
         <div id="overview" class="section" style="display: none;">
-            <h2 class="section-title">
-                <i class="fas fa-tachometer-alt"></i>
-                Visão Geral
-            </h2>
-            <div class="metrics-grid" id="metrics-cards">
-                <!-- Cards serão populados via JS -->
-            </div>
+            <h2 class="section-title"><i class="fas fa-tachometer-alt"></i> Visão Geral</h2>
+            <div class="metrics-grid" id="metrics-cards"></div>
         </div>
 
-        <!-- Posts Section -->
         <div id="posts-section" class="section" style="display: none;">
-            <h2 class="section-title">
-                <i class="fas fa-table"></i>
-                Análise Detalhada das Postagens
-            </h2>
-            
+            <h2 class="section-title"><i class="fas fa-table"></i> Análise Detalhada das Postagens</h2>
             <div class="controls">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
                     <input type="text" id="search" placeholder="Pesquisar por nome do conteúdo...">
                 </div>
             </div>
-
             <div class="table-container">
                 <table>
                     <thead>
@@ -469,47 +174,32 @@
                             <th class="numeric"><i class="fas fa-user-plus"></i> Seguidores</th>
                         </tr>
                     </thead>
-                    <tbody id="posts-table">
-                        <!-- Linhas serão populadas via JS -->
-                    </tbody>
+                    <tbody id="posts-table"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Charts Section -->
         <div id="charts-section" class="section" style="display: none;">
-            <h2 class="section-title">
-                <i class="fas fa-chart-bar"></i>
-                Análise Gráfica
-            </h2>
-            
+            <h2 class="section-title"><i class="fas fa-chart-bar"></i> Análise Gráfica</h2>
             <div class="charts-grid">
                 <div class="chart-container">
                     <h3 class="chart-title">Visualizações por Postagem</h3>
                     <canvas id="viewsChart"></canvas>
                 </div>
-                
                 <div class="chart-container">
                     <h3 class="chart-title">Interações por Postagem</h3>
                     <canvas id="interactionsChart"></canvas>
                 </div>
             </div>
-
             <div class="chart-container">
                 <h3 class="chart-title">Performance Comparativa</h3>
                 <canvas id="performanceChart"></canvas>
             </div>
         </div>
 
-        <!-- Statistics Section -->
         <div id="stats-section" class="section" style="display: none;">
-            <h2 class="section-title">
-                <i class="fas fa-chart-pie"></i>
-                Estatísticas Avançadas
-            </h2>
-            <div class="stats-row" id="advanced-stats">
-                <!-- Estatísticas serão populadas via JS -->
-            </div>
+            <h2 class="section-title"><i class="fas fa-chart-pie"></i> Estatísticas Avançadas</h2>
+            <div class="stats-row" id="advanced-stats"></div>
         </div>
     </div>
 
@@ -518,84 +208,98 @@
     </div>
 
     <script>
-        // Configuração da planilha
+        // ===================== CONFIGURAÇÃO DA PLANILHA =====================
+        // URL publicada atual (mantida para referência e para fallback CSV)
         const SHEET_CONFIG = {
-            // Substitua pela URL pública da sua planilha (formato pubhtml)
             url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3qOFJMJ_6xLpZxUOdOK_CKsMVBNv6QHioyGHx-O2sabG0Vxd3o7h7pPQB6BI4-P-T7udw_AYXKYHZ/pubhtml?gid=0&single=true",
-            range: "B15:J27", // Intervalo específico que será extraído
-            sheet: "Agosto" // Nome da guia
+            gid: "0",
+            sheet: "Agosto",
+            range: "B15:J27",
+            gvizUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3qOFJMJ_6xLpZxUOdOK_CKsMVBNv6QHioyGHx-O2sabG0Vxd3o7h7pPQB6BI4-P-T7udw_AYXKYHZ/gviz/tq"
         };
 
+        function buildGvizUrl() {
+            const params = new URLSearchParams({
+                gid: SHEET_CONFIG.gid,
+                range: SHEET_CONFIG.range,
+                tqx: "out:json",
+                sheet: SHEET_CONFIG.sheet
+            });
+            return `${SHEET_CONFIG.gvizUrl}?${params.toString()}`;
+        }
+
+        function buildPublishedCsvUrl() {
+            // CSV do conteúdo publicado (CORS OK). Observação: o CSV ignora range; recortaremos depois.
+            return SHEET_CONFIG.url.replace("/pubhtml", "/pub") + "&output=csv";
+        }
+
+        // ===================== ESTADO GLOBAL =====================
         let globalData = { overview: {}, posts: [], computed: {} };
 
-        // Função para buscar dados da planilha
+        // ===================== BUSCA DE DADOS =====================
         async function fetchSheetData() {
             try {
                 showLoading();
-                
-                // Usar um proxy CORS para contornar limitações de CORS
-                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-                const targetUrl = SHEET_CONFIG.url;
-                
-                let response;
-                let htmlText;
-                
+
+                // 1) GViz JSON (respeita sheet + range; CORS OK)
                 try {
-                    // Primeiro tenta sem proxy
-                    response = await fetch(targetUrl, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-                        }
+                    const res = await fetch(buildGvizUrl());
+                    const txt = await res.text();
+                    const matrix = parseGvizJson(txt);
+                    const data = mapMatrixToData(matrix);
+                    if (!data.posts.length) throw new Error("Intervalo sem dados (GViz).");
+                    globalData = data;
+                    renderDashboard(data);
+                    hideLoading();
+                    return;
+                } catch (e) {
+                    console.warn("GViz falhou, tentando CSV publicado...", e);
+                }
+
+                // 2) Fallback CSV publicado (CORS OK) + recorte do intervalo
+                try {
+                    const res = await fetch(buildPublishedCsvUrl());
+                    const csvText = await res.text();
+                    const data = parseCSVDataWithRange(csvText, {
+                        startRow: 15, // B15:J27 -> linha 15
+                        startCol: 2,  // B = 2
+                        endCol: 10,   // J = 10
+                        rows: 13      // 27 - 15 + 1 = 13
                     });
-                    htmlText = await response.text();
-                } catch (corsError) {
-                    console.log('Tentativa sem proxy falhou, tentando alternativas...');
-                    
-                    // Tenta com diferentes métodos
-                    try {
-                        // Converte pubhtml para export CSV
-                        const csvUrl = targetUrl.replace('/pubhtml', '/export').replace(/&single=true/, '') + '&format=csv';
-                        response = await fetch(csvUrl);
-                        const csvText = await response.text();
-                        const data = parseCSVData(csvText);
-                        
-                        globalData = data;
-                        renderDashboard(data);
-                        hideLoading();
-                        return;
-                        
-                    } catch (csvError) {
-                        // Se CSV também falhar, usa dados de exemplo
-                        console.log('Usando dados de exemplo devido a limitações de CORS');
-                        const data = generateSampleData();
-                        globalData = data;
-                        renderDashboard(data);
-                        hideLoading();
-                        showCorsWarning();
-                        return;
-                    }
+                    if (!data.posts.length) throw new Error("Intervalo sem dados (CSV).");
+                    globalData = data;
+                    renderDashboard(data);
+                    hideLoading();
+                    return;
+                } catch (e) {
+                    console.warn("CSV publicado falhou:", e);
                 }
-                
-                const data = parseHTMLData(htmlText);
-                
-                if (data.posts.length === 0) {
-                    throw new Error("Nenhum dado foi encontrado no intervalo especificado. Verifique se a planilha está publicada corretamente.");
-                }
-                
-                globalData = data;
-                renderDashboard(data);
+
+                // 3) Último recurso: dados de exemplo
+                const sample = generateSampleData();
+                globalData = sample;
+                renderDashboard(sample);
                 hideLoading();
-                
+                showCorsWarning("Usando dados de exemplo. Não foi possível ler a planilha (GViz/CSV).");
+
             } catch (error) {
-                console.error('Erro ao buscar dados:', error);
-                showError(`${error.message}\n\nDicas:\n1. Verifique se a planilha está publicada como "Público na web"\n2. Confirme se a URL está correta\n3. Verifique se o intervalo B15:J27 contém dados`);
+                console.error("Erro ao buscar dados:", error);
+                showError(
+                    `${error.message}\n\nDicas:\n1) Publique a guia "${SHEET_CONFIG.sheet}" em Arquivo > Compartilhar > Publicar na Web\n2) Use o link publicado (d/e/.../pubhtml) e mantenha o gid correto (${SHEET_CONFIG.gid})\n3) Confirme se o intervalo ${SHEET_CONFIG.range} contém dados`
+                );
                 hideLoading();
             }
         }
 
-        // Parse dos dados HTML da planilha publicada
-        function parseHTMLData(htmlText) {
+        // ===================== PARSERS E MAPEAMENTOS =====================
+        function parseGvizJson(text) {
+            // Remove o wrapper google.visualization.Query.setResponse(...)
+            const json = JSON.parse(text.replace(/^[^{]+/, "").replace(/;?\s*$/, ""));
+            const rows = (json.table?.rows || []).map(r => (r.c || []).map(c => (c ? c.v : "")));
+            return rows; // matriz do intervalo B..J
+        }
+
+        function mapMatrixToData(matrix) {
             const data = {
                 overview: {
                     visualizacoes_total: 0,
@@ -607,131 +311,76 @@
                 computed: {}
             };
 
-            try {
-                // Criar um parser DOM
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(htmlText, 'text/html');
-                
-                // Encontrar a tabela principal
-                const tables = doc.querySelectorAll('table');
-                let targetTable = null;
-                
-                // Procurar pela tabela que contém os dados
-                for (let table of tables) {
-                    const rows = table.querySelectorAll('tr');
-                    if (rows.length > 10) { // Assumindo que nossa tabela tem mais de 10 linhas
-                        targetTable = table;
-                        break;
-                    }
+            matrix.forEach(row => {
+                // Esperado: B..J (9 colunas). Para as métricas, usamos B..I (8 primeiras).
+                if (row.length >= 8) {
+                    const post = {
+                        conteudo: (row[0] ?? "").toString().trim(),
+                        nome: (row[1] ?? "").toString().trim(),
+                        tempo: (row[2] ?? "").toString().trim(),
+                        hora: (row[3] ?? "").toString().trim(),
+                        visualizacoes: parseNumber(row[4]),
+                        contas_alcancadas: parseNumber(row[5]),
+                        interacoes: parseNumber(row[6]),
+                        seguir: parseNumber(row[7])
+                    };
+                    if (post.nome && !/nome\s*/i.test(post.nome)) data.posts.push(post);
                 }
-                
-                if (!targetTable) {
-                    throw new Error('Tabela não encontrada no HTML');
-                }
-                
-                const rows = targetTable.querySelectorAll('tr');
-                
-                // Encontrar a linha que corresponde ao B15 (linha 15) e processar até J27
-                let startRow = -1;
-                let dataRows = [];
-                
-                // Procurar por indicadores de dados (números, textos específicos)
-                for (let i = 0; i < rows.length; i++) {
-                    const cells = rows[i].querySelectorAll('td, th');
-                    if (cells.length >= 8) {
-                        const firstCell = cells[1]?.textContent?.trim(); // Coluna B
-                        const secondCell = cells[2]?.textContent?.trim(); // Coluna C
-                        
-                        if (firstCell && secondCell && firstCell.length > 0 && secondCell.length > 0) {
-                            if (startRow === -1) startRow = i;
-                            dataRows.push(rows[i]);
-                            
-                            // Limitar a 13 linhas (B15:J27 são 13 linhas)
-                            if (dataRows.length >= 13) break;
-                        }
-                    }
-                }
-                
-                // Processar as linhas de dados
-                dataRows.forEach((row, index) => {
-                    const cells = row.querySelectorAll('td, th');
-                    if (cells.length >= 9) {
-                        const post = {
-                            conteudo: cells[1]?.textContent?.trim() || '', // Coluna B
-                            nome: cells[2]?.textContent?.trim() || '', // Coluna C
-                            tempo: cells[3]?.textContent?.trim() || '', // Coluna D
-                            hora: cells[4]?.textContent?.trim() || '', // Coluna E
-                            visualizacoes: parseNumber(cells[5]?.textContent) || 0, // Coluna F
-                            contas_alcancadas: parseNumber(cells[6]?.textContent) || 0, // Coluna G
-                            interacoes: parseNumber(cells[7]?.textContent) || 0, // Coluna H
-                            seguir: parseNumber(cells[8]?.textContent) || 0 // Coluna I
-                        };
-                        
-                        // Só adicionar se tiver nome válido
-                        if (post.nome && post.nome.length > 0 && post.nome !== '' && !post.nome.includes('Nome')) {
-                            data.posts.push(post);
-                        }
-                    }
-                });
-                
-            } catch (parseError) {
-                console.error('Erro no parsing HTML:', parseError);
-                throw new Error('Erro ao processar dados da planilha');
-            }
-            
+            });
+
             return calculateTotals(data);
         }
 
-        // Parse dos dados CSV (fallback)
-        function parseCSVData(csvText) {
-            const lines = csvText.split('\n').map(line => line.trim()).filter(line => line);
-            const data = {
-                overview: {
-                    visualizacoes_total: 0,
-                    contas_alcancadas_total: 0,
-                    interacoes_totais: 0,
-                    novos_seguidores_total: 0
-                },
-                posts: [],
-                computed: {}
-            };
-
-            // Processar dados assumindo que a primeira linha são os cabeçalhos
-            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-            
-            for (let i = 1; i < lines.length; i++) {
-                const row = lines[i].split(',').map(cell => cell.trim().replace(/"/g, ''));
-                
-                if (row.length >= 8 && row[0] && row[1]) {
-                    const post = {
-                        conteudo: row[0] || '',
-                        nome: row[1] || '',
-                        tempo: row[2] || '',
-                        hora: row[3] || '',
-                        visualizacoes: parseInt(row[4]?.replace(/\./g, '').replace(/,/g, '')) || 0,
-                        contas_alcancadas: parseInt(row[5]?.replace(/\./g, '').replace(/,/g, '')) || 0,
-                        interacoes: parseInt(row[6]?.replace(/\./g, '').replace(/,/g, '')) || 0,
-                        seguir: parseInt(row[7]?.replace(/\./g, '').replace(/,/g, '')) || 0
-                    };
-                    
-                    if (post.nome.trim() !== '') {
-                        data.posts.push(post);
-                    }
+        function parseCSVDataWithRange(csvText, { startRow, startCol, endCol, rows }) {
+            // Parser CSV robusto (aspas, quebras de linha)
+            const matrix = [];
+            let i = 0, cur = "", inQ = false, row = [];
+            while (i < csvText.length) {
+                const ch = csvText[i];
+                if (inQ) {
+                    if (ch === '"') {
+                        if (csvText[i + 1] === '"') { cur += '"'; i++; }
+                        else inQ = false;
+                    } else cur += ch;
+                } else {
+                    if (ch === '"') inQ = true;
+                    else if (ch === ",") { row.push(cur); cur = ""; }
+                    else if (ch === "\n" || ch === "\r") {
+                        if (cur.length || row.length) { row.push(cur); matrix.push(row); row = []; cur = ""; }
+                    } else cur += ch;
                 }
+                i++;
             }
+            if (cur.length || row.length) { row.push(cur); matrix.push(row); }
 
-            // Calcular totais
+            // Recorte B..J de linhas 15..27 (1-indexado)
+            const startIdx = startRow - 1;
+            const endIdx = startIdx + rows;
+            const slice = matrix.slice(startIdx, endIdx).map(r => r.slice(startCol - 1, endCol));
+
+            return mapMatrixToData(slice);
+        }
+
+        // ===================== UTILITÁRIOS DE NÚMERO E MÉTRICAS =====================
+        function parseNumber(value) {
+            if (value == null) return 0;
+            if (typeof value === "number") return value;
+            const s = String(value).replace(/\./g, "").replace(/,/g, ".");
+            const n = parseFloat(s);
+            return isNaN(n) ? 0 : n;
+        }
+
+        function calculateTotals(data) {
             if (data.posts.length > 0) {
                 data.overview.visualizacoes_total = data.posts.reduce((sum, p) => sum + p.visualizacoes, 0);
                 data.overview.contas_alcancadas_total = data.posts.reduce((sum, p) => sum + p.contas_alcancadas, 0);
                 data.overview.interacoes_totais = data.posts.reduce((sum, p) => sum + p.interacoes, 0);
                 data.overview.novos_seguidores_total = data.posts.reduce((sum, p) => sum + p.seguir, 0);
 
-                // Métricas computadas
                 const totalViews = data.overview.visualizacoes_total;
                 const avgViews = totalViews / data.posts.length;
                 const topPost = data.posts.reduce((max, p) => p.visualizacoes > max.visualizacoes ? p : max, data.posts[0]);
-                const avgEngagement = data.posts.length > 0 ? 
+                const avgEngagement = data.posts.length > 0 ?
                     data.posts.reduce((sum, p) => sum + (p.interacoes / Math.max(p.visualizacoes, 1)), 0) / data.posts.length * 100 : 0;
 
                 data.computed = {
@@ -742,75 +391,37 @@
                     total_reach: data.overview.contas_alcancadas_total
                 };
             }
-
             return data;
         }
 
-        // Renderizar dashboard completo
+        // ===================== RENDERIZAÇÃO DO DASHBOARD =====================
         function renderDashboard(data) {
             renderOverview(data.overview, data.computed);
             renderPosts(data.posts);
             renderCharts(data.posts);
             renderAdvancedStats(data.computed);
             setupSearch();
-            showSections();
+            // Corrigido: garante os botões de exportação
+            showSectionsEnhanced();
         }
 
-        // Renderizar visão geral
         function renderOverview(overview, computed) {
             const container = document.getElementById('metrics-cards');
             container.innerHTML = '';
 
             const metrics = [
-                { 
-                    key: 'visualizacoes_total', 
-                    value: overview.visualizacoes_total,
-                    label: 'Total de Visualizações', 
-                    icon: 'fas fa-eye',
-                    color: '#667eea'
-                },
-                { 
-                    key: 'contas_alcancadas_total', 
-                    value: overview.contas_alcancadas_total,
-                    label: 'Contas Alcançadas', 
-                    icon: 'fas fa-users',
-                    color: '#764ba2'
-                },
-                { 
-                    key: 'interacoes_totais', 
-                    value: overview.interacoes_totais,
-                    label: 'Total de Interações', 
-                    icon: 'fas fa-heart',
-                    color: '#f093fb'
-                },
-                { 
-                    key: 'novos_seguidores_total', 
-                    value: overview.novos_seguidores_total,
-                    label: 'Novos Seguidores', 
-                    icon: 'fas fa-user-plus',
-                    color: '#4facfe'
-                },
-                { 
-                    key: 'avg_views', 
-                    value: computed.avg_views,
-                    label: 'Média de Visualizações', 
-                    icon: 'fas fa-chart-line',
-                    color: '#43e97b'
-                },
-                { 
-                    key: 'avg_engagement', 
-                    value: computed.avg_engagement + '%',
-                    label: 'Taxa de Engajamento', 
-                    icon: 'fas fa-percentage',
-                    color: '#fa709a'
-                }
+                { key: 'visualizacoes_total', value: overview.visualizacoes_total, label: 'Total de Visualizações', icon: 'fas fa-eye', color: '#667eea' },
+                { key: 'contas_alcancadas_total', value: overview.contas_alcancadas_total, label: 'Contas Alcançadas', icon: 'fas fa-users', color: '#764ba2' },
+                { key: 'interacoes_totais', value: overview.interacoes_totais, label: 'Total de Interações', icon: 'fas fa-heart', color: '#f093fb' },
+                { key: 'novos_seguidores_total', value: overview.novos_seguidores_total, label: 'Novos Seguidores', icon: 'fas fa-user-plus', color: '#4facfe' },
+                { key: 'avg_views', value: computed.avg_views, label: 'Média de Visualizações', icon: 'fas fa-chart-line', color: '#43e97b' },
+                { key: 'avg_engagement', value: computed.avg_engagement + '%', label: 'Taxa de Engajamento', icon: 'fas fa-percentage', color: '#fa709a' }
             ];
 
             metrics.forEach((metric, index) => {
                 const card = document.createElement('div');
                 card.className = 'metric-card fade-in';
                 card.style.animationDelay = `${index * 0.1}s`;
-                
                 card.innerHTML = `
                     <div class="metric-icon" style="color: ${metric.color};">
                         <i class="${metric.icon}"></i>
@@ -818,21 +429,17 @@
                     <div class="metric-value">${typeof metric.value === 'number' ? metric.value.toLocaleString('pt-BR') : metric.value}</div>
                     <div class="metric-label">${metric.label}</div>
                 `;
-                
                 container.appendChild(card);
             });
         }
 
-        // Renderizar tabela de posts
         function renderPosts(posts) {
             const tableBody = document.getElementById('posts-table');
             tableBody.innerHTML = '';
-
             posts.forEach((post, index) => {
                 const row = document.createElement('tr');
                 row.className = 'fade-in';
                 row.style.animationDelay = `${index * 0.05}s`;
-                
                 row.innerHTML = `
                     <td>${post.conteudo}</td>
                     <td><strong>${post.nome}</strong></td>
@@ -843,16 +450,13 @@
                     <td class="numeric">${post.interacoes.toLocaleString('pt-BR')}</td>
                     <td class="numeric">${post.seguir.toLocaleString('pt-BR')}</td>
                 `;
-                
                 tableBody.appendChild(row);
             });
         }
 
-        // Renderizar gráficos
         function renderCharts(posts) {
             const labels = posts.map(post => post.nome.length > 25 ? post.nome.substring(0, 22) + '...' : post.nome);
-            
-            // Gráfico de Visualizações
+
             new Chart(document.getElementById('viewsChart'), {
                 type: 'bar',
                 data: {
@@ -862,29 +466,19 @@
                         data: posts.map(post => post.visualizacoes),
                         backgroundColor: 'rgba(102, 126, 234, 0.8)',
                         borderColor: 'rgba(102, 126, 234, 1)',
-                        borderWidth: 2,
-                        borderRadius: 8,
-                        borderSkipped: false,
+                        borderWidth: 2, borderRadius: 8, borderSkipped: false
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: { 
-                            beginAtZero: true,
-                            grid: { color: '#f1f3f4' }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
+                        y: { beginAtZero: true, grid: { color: '#f1f3f4' } },
+                        x: { grid: { display: false } }
                     }
                 }
             });
 
-            // Gráfico de Interações
             new Chart(document.getElementById('interactionsChart'), {
                 type: 'line',
                 data: {
@@ -894,33 +488,21 @@
                         data: posts.map(post => post.interacoes),
                         borderColor: 'rgba(118, 75, 162, 1)',
                         backgroundColor: 'rgba(118, 75, 162, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
+                        borderWidth: 3, fill: true, tension: 0.4,
                         pointBackgroundColor: 'rgba(118, 75, 162, 1)',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2,
-                        pointRadius: 6
+                        pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 6
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: { 
-                            beginAtZero: true,
-                            grid: { color: '#f1f3f4' }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
+                        y: { beginAtZero: true, grid: { color: '#f1f3f4' } },
+                        x: { grid: { display: false } }
                     }
                 }
             });
 
-            // Gráfico de Performance Comparativa
             new Chart(document.getElementById('performanceChart'), {
                 type: 'radar',
                 data: {
@@ -931,77 +513,61 @@
                             data: normalizeArray(posts.slice(0, 6).map(post => post.visualizacoes)),
                             borderColor: 'rgba(102, 126, 234, 1)',
                             backgroundColor: 'rgba(102, 126, 234, 0.2)',
-                            pointBackgroundColor: 'rgba(102, 126, 234, 1)',
+                            pointBackgroundColor: 'rgba(102, 126, 234, 1)'
                         },
                         {
                             label: 'Interações (normalizado)',
                             data: normalizeArray(posts.slice(0, 6).map(post => post.interacoes)),
                             borderColor: 'rgba(118, 75, 162, 1)',
                             backgroundColor: 'rgba(118, 75, 162, 0.2)',
-                            pointBackgroundColor: 'rgba(118, 75, 162, 1)',
+                            pointBackgroundColor: 'rgba(118, 75, 162, 1)'
                         }
                     ]
                 },
-                options: {
-                    responsive: true,
-                    scales: {
-                        r: {
-                            beginAtZero: true,
-                            max: 10
-                        }
-                    }
-                }
+                options: { responsive: true, scales: { r: { beginAtZero: true, max: 10 } } }
             });
         }
 
-        // Normalizar array para escala 0-10
         function normalizeArray(arr) {
-            const max = Math.max(...arr);
-            const min = Math.min(...arr);
+            const max = Math.max(...arr); const min = Math.min(...arr);
             return arr.map(val => max === min ? 5 : ((val - min) / (max - min)) * 10);
         }
 
-        // Renderizar estatísticas avançadas
         function renderAdvancedStats(computed) {
             const container = document.getElementById('advanced-stats');
             container.innerHTML = '';
-
             const stats = [
-                { label: 'Total de Posts', value: computed.total_posts, icon: 'fas fa-file-alt' },
-                { label: 'Média de Views', value: computed.avg_views?.toLocaleString('pt-BR') || '0', icon: 'fas fa-eye' },
-                { label: 'Taxa de Engajamento', value: computed.avg_engagement + '%', icon: 'fas fa-heart' },
-                { label: 'Melhor Post', value: computed.top_post?.nome?.substring(0, 20) + '...' || 'N/A', icon: 'fas fa-trophy' },
-                { label: 'Alcance Total', value: computed.total_reach?.toLocaleString('pt-BR') || '0', icon: 'fas fa-users' }
+                { label: 'Total de Posts', value: computed.total_posts ?? 0, icon: 'fas fa-file-alt' },
+                { label: 'Média de Views', value: (computed.avg_views ?? 0).toLocaleString('pt-BR'), icon: 'fas fa-eye' },
+                { label: 'Taxa de Engajamento', value: (computed.avg_engagement ?? 0) + '%', icon: 'fas fa-heart' },
+                { label: 'Melhor Post', value: computed.top_post?.nome ? computed.top_post.nome.substring(0, 20) + '...' : 'N/A', icon: 'fas fa-trophy' },
+                { label: 'Alcance Total', value: (computed.total_reach ?? 0).toLocaleString('pt-BR'), icon: 'fas fa-users' }
             ];
-
             stats.forEach((stat, index) => {
                 const item = document.createElement('div');
                 item.className = 'stat-item fade-in';
                 item.style.animationDelay = `${index * 0.1}s`;
-                
                 item.innerHTML = `
                     <i class="${stat.icon}" style="color: #667eea; font-size: 1.5rem; margin-bottom: 10px;"></i>
                     <div class="stat-value">${stat.value}</div>
                     <div class="stat-label">${stat.label}</div>
                 `;
-                
                 container.appendChild(item);
             });
         }
 
-        // Configurar busca
+        // ===================== BUSCA NA TABELA =====================
         function setupSearch() {
             const searchInput = document.getElementById('search');
             const tableBody = document.getElementById('posts-table');
-            
+            if (!searchInput) return;
+
             searchInput.addEventListener('input', (e) => {
                 const filter = e.target.value.toLowerCase();
                 const rows = tableBody.querySelectorAll('tr');
-                
                 rows.forEach(row => {
-                    const name = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
-                    const content = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
-                    
+                    const name = row.querySelector('td:nth-child(2)')?.textContent.toLowerCase() || "";
+                    const content = row.querySelector('td:nth-child(1)')?.textContent.toLowerCase() || "";
                     if (name.includes(filter) || content.includes(filter)) {
                         row.style.display = '';
                         row.style.animation = 'fadeIn 0.3s ease';
@@ -1012,24 +578,19 @@
             });
         }
 
-        // Funções de UI
+        // ===================== UI AUXILIAR =====================
         function showLoading() {
             document.getElementById('loading').style.display = 'flex';
             document.getElementById('error').style.display = 'none';
             hideSections();
         }
-
-        function hideLoading() {
-            document.getElementById('loading').style.display = 'none';
-        }
-
+        function hideLoading() { document.getElementById('loading').style.display = 'none'; }
         function showError(message) {
             const errorDiv = document.getElementById('error');
             errorDiv.style.display = 'block';
             errorDiv.querySelector('p').textContent = message;
             hideSections();
         }
-
         function showSections() {
             const sections = ['overview', 'posts-section', 'charts-section', 'stats-section'];
             sections.forEach((id, index) => {
@@ -1038,95 +599,15 @@
                 section.style.animation = `slideUp 0.6s ease ${index * 0.1}s both`;
             });
         }
-
         function hideSections() {
             const sections = ['overview', 'posts-section', 'charts-section', 'stats-section'];
-            sections.forEach(id => {
-                document.getElementById(id).style.display = 'none';
-            });
+            sections.forEach(id => { document.getElementById(id).style.display = 'none'; });
         }
 
-        // Função para atualizar URL da planilha
-        function updateSheetUrl(sheetId) {
-            SHEET_CONFIG.url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0&range=B15:J27`;
-        }
-
-        // Função para recarregar dados
-        function refreshData() {
-            fetchSheetData();
-        }
-
-        // Adicionar botão de refresh
-        function addRefreshButton() {
-            const header = document.querySelector('.header');
-            const refreshBtn = document.createElement('button');
-            refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Atualizar Dados';
-            refreshBtn.style.cssText = `
-                margin-top: 15px;
-                padding: 12px 24px;
-                background: linear-gradient(135deg, #667eea, #764ba2);
-                color: white;
-                border: none;
-                border-radius: 50px;
-                font-weight: 500;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            `;
-            
-            refreshBtn.addEventListener('click', refreshData);
-            refreshBtn.addEventListener('mouseover', () => {
-                refreshBtn.style.transform = 'scale(1.05)';
-                refreshBtn.style.boxShadow = '0 10px 25px rgba(102, 126, 234, 0.3)';
-            });
-            refreshBtn.addEventListener('mouseout', () => {
-                refreshBtn.style.transform = 'scale(1)';
-                refreshBtn.style.boxShadow = 'none';
-            });
-            
-            header.appendChild(refreshBtn);
-        }
-
-        // Adicionar informações de configuração
-        function addConfigInfo() {
-            const configDiv = document.createElement('div');
-            configDiv.innerHTML = `
-                <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin-top: 20px; color: white; font-size: 0.9rem;">
-                    <i class="fas fa-info-circle"></i> 
-                    <strong>Configuração:</strong> Lendo dados do intervalo B15:J27 da guia "Agosto"
-                    <br>
-                    <i class="fas fa-link"></i> Para configurar, substitua [SUA_PLANILHA_ID] pela ID da sua planilha do Google Sheets
-                </div>
-            `;
-            document.querySelector('.header').appendChild(configDiv);
-        }
-
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', () => {
-            addRefreshButton();
-            addConfigInfo();
-            
-            // Verificar se a URL está configurada
-            if (SHEET_CONFIG.url.includes('[SUA_PLANILHA_ID]')) {
-                showError('Configure a ID da planilha no código JavaScript antes de usar o dashboard.');
-                return;
-            }
-            
-            // Carregar dados iniciais
-            fetchSheetData();
-            
-            // Auto-refresh a cada 5 minutos
-            setInterval(refreshData, 5 * 60 * 1000);
-        });
-
-        // Adicionar funcionalidade de export
-        function exportToPDF() {
-            window.print();
-        }
-
+        function exportToPDF() { window.print(); }
         function exportToCSV() {
             if (globalData.posts.length === 0) return;
-            
-            const headers = ['Conteúdo', 'Nome', 'Tempo', 'Hora', 'Visualizações', 'Contas Alcançadas', 'Interações', 'Novos Seguidores'];
+            const headers = ['Conteúdo','Nome','Tempo','Hora','Visualizações','Contas Alcançadas','Interações','Novos Seguidores'];
             const csvContent = [
                 headers.join(','),
                 ...globalData.posts.map(post => [
@@ -1140,7 +621,6 @@
                     post.seguir
                 ].join(','))
             ].join('\n');
-            
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -1148,58 +628,111 @@
             link.click();
         }
 
-        // Adicionar botões de export
         function addExportButtons() {
             const controls = document.querySelector('.controls');
             if (!controls) return;
-            
             const exportDiv = document.createElement('div');
             exportDiv.style.cssText = 'display: flex; gap: 10px;';
-            
             const pdfBtn = document.createElement('button');
             pdfBtn.innerHTML = '<i class="fas fa-file-pdf"></i> PDF';
             pdfBtn.onclick = exportToPDF;
-            
             const csvBtn = document.createElement('button');
             csvBtn.innerHTML = '<i class="fas fa-file-csv"></i> CSV';
             csvBtn.onclick = exportToCSV;
-            
             [pdfBtn, csvBtn].forEach(btn => {
                 btn.style.cssText = `
                     padding: 15px 20px;
                     background: linear-gradient(135deg, #667eea, #764ba2);
-                    color: white;
-                    border: none;
-                    border-radius: 50px;
-                    font-weight: 500;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
+                    color: white; border: none; border-radius: 50px;
+                    font-weight: 500; cursor: pointer; transition: all 0.3s ease;
                 `;
+                btn.addEventListener('mouseover', () => { btn.style.transform = 'scale(1.05)'; btn.style.boxShadow = '0 10px 25px rgba(102,126,234,0.3)'; });
+                btn.addEventListener('mouseout', () => { btn.style.transform = 'scale(1)'; btn.style.boxShadow = 'none'; });
             });
-            
             exportDiv.appendChild(pdfBtn);
             exportDiv.appendChild(csvBtn);
             controls.appendChild(exportDiv);
         }
 
-        // Melhorar a função de mostrar seções para incluir os botões de export
         function showSectionsEnhanced() {
             showSections();
             setTimeout(addExportButtons, 500);
         }
 
-        // Print styles para PDF
-        const printStyles = document.createElement('style');
-        printStyles.textContent = `
-            @media print {
-                body { background: white !important; }
-                .section { box-shadow: none !important; border: 1px solid #ddd; }
-                .header { background: white !important; color: black !important; }
-                .chart-container { page-break-inside: avoid; }
-                button { display: none !important; }
+        // ===================== BOTÃO DE ATUALIZAÇÃO E INFO =====================
+        function refreshData() { fetchSheetData(); }
+
+        function addRefreshButton() {
+            const header = document.querySelector('.header');
+            const refreshBtn = document.createElement('button');
+            refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Atualizar Dados';
+            refreshBtn.style.cssText = `
+                margin-top: 15px; padding: 12px 24px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white; border: none; border-radius: 50px;
+                font-weight: 500; cursor: pointer; transition: all 0.3s ease;
+            `;
+            refreshBtn.addEventListener('click', refreshData);
+            refreshBtn.addEventListener('mouseover', () => {
+                refreshBtn.style.transform = 'scale(1.05)';
+                refreshBtn.style.boxShadow = '0 10px 25px rgba(102,126,234,0.3)';
+            });
+            refreshBtn.addEventListener('mouseout', () => {
+                refreshBtn.style.transform = 'scale(1)';
+                refreshBtn.style.boxShadow = 'none';
+            });
+            header.appendChild(refreshBtn);
+        }
+
+        function addConfigInfo() {
+            const configDiv = document.createElement('div');
+            configDiv.innerHTML = `
+                <div style="background: rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin-top: 20px; color: white; font-size: 0.9rem;">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Configuração:</strong> Lendo dados do intervalo <strong>${SHEET_CONFIG.range}</strong> da guia "<strong>${SHEET_CONFIG.sheet}</strong>" (GViz JSON com fallback CSV publicado)
+                    <br>
+                    <i class="fas fa-link"></i> A planilha deve estar <em>Publicada na Web</em> (Arquivo &gt; Compartilhar &gt; Publicar na Web)
+                </div>
+            `;
+            document.querySelector('.header').appendChild(configDiv);
+        }
+
+        // ===================== AVISOS E DADOS DE EXEMPLO =====================
+        function showCorsWarning(message) {
+            const w = document.getElementById('warning');
+            w.textContent = message || 'Aviso: não foi possível consultar a planilha publicada; exibindo dados de exemplo.';
+            w.style.display = 'block';
+        }
+
+        function generateSampleData() {
+            const posts = [
+                { conteudo: 'Vídeo', nome: 'Lançamento Produto A', tempo: '00:45', hora: '10:00', visualizacoes: 12000, contas_alcancadas: 9500, interacoes: 1800, seguir: 120 },
+                { conteudo: 'Carrossel', nome: 'Dicas de Uso', tempo: '—', hora: '14:00', visualizacoes: 9800, contas_alcancadas: 8200, interacoes: 950, seguir: 60 },
+                { conteudo: 'Reels', nome: 'Bastidores da Equipe', tempo: '00:30', hora: '18:00', visualizacoes: 15000, contas_alcancadas: 11000, interacoes: 2200, seguir: 150 },
+                { conteudo: 'Imagem', nome: 'Depoimento Cliente', tempo: '—', hora: '09:00', visualizacoes: 7200, contas_alcancadas: 6500, interacoes: 600, seguir: 35 },
+                { conteudo: 'Vídeo', nome: 'Comparativo A vs B', tempo: '01:10', hora: '20:00', visualizacoes: 13400, contas_alcancadas: 10050, interacoes: 1600, seguir: 90 },
+                { conteudo: 'Stories', nome: 'Enquete Semanal', tempo: '—', hora: '12:00', visualizacoes: 5400, contas_alcancadas: 4800, interacoes: 700, seguir: 20 }
+            ];
+            const data = { overview: {}, posts, computed: {} };
+            return calculateTotals(data);
+        }
+
+        // ===================== INICIALIZAÇÃO =====================
+        document.addEventListener('DOMContentLoaded', () => {
+            addRefreshButton();
+            addConfigInfo();
+
+            // Se por acaso houver placeholder de ID não configurado, alerta (mantido por segurança)
+            if (SHEET_CONFIG.url.includes('[SUA_PLANILHA_ID]')) {
+                showError('Configure a ID da planilha no código JavaScript antes de usar o dashboard.');
+                return;
             }
-        `;
-        document.head.appendChild(printStyles);
+
+            fetchSheetData();
+
+            // Auto-refresh a cada 5 minutos
+            setInterval(refreshData, 5 * 60 * 1000);
+        });
     </script>
 </body>
 </html>
